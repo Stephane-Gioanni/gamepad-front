@@ -10,6 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "./Images/gamepad.png";
 import Loader from "./Components/Loader";
+import WidthAlert from "./Components/WidthAlert";
 
 export default function Home() {
   const [data, setData] = useState();
@@ -18,6 +19,7 @@ export default function Home() {
   const [orderingField, setOrderingField] = useState("");
   const [page, setPage] = useState(1);
   const [selectedOption, setSelectedOption] = useState();
+  const [windowWidth, setWindowWidth] = useState(1200);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +37,15 @@ export default function Home() {
       setIsLoading(false);
     };
     fetchData();
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [orderingField, searchInput, page, selectedOption]);
 
   const handleOrderingChange = (newOrderingField) => {
@@ -48,7 +59,94 @@ export default function Home() {
   return isLoading ? (
     <Loader></Loader>
   ) : (
-    <main className={styles.mainGeneral}>
+    <div className={styles.mainGeneral}>
+      {windowWidth > 902 ? (
+        <main className={styles.mainGeneral}>
+          <div className={styles.main}>
+            <Header></Header>
+            <header className={styles.header}>
+              <Image src={Logo} alt="logo"></Image>
+              <input
+                className={styles.headerInput}
+                type="text"
+                placeholder="Search for a game.."
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+              />
+
+              <select
+                className={styles.filtersSelect}
+                value={selectedOption}
+                onChange={handleOptionChange}
+              >
+                <option value="name">Sort by name A-Z</option>
+                <option value="-name"> Sort by name Z-A</option>
+                <option value="-rating"> Best rating first</option>
+                <option value="rating"> Worst rating first</option>
+                <option value="released"> The oldest first</option>
+                <option value="-released"> Most recent first</option>
+              </select>
+            </header>
+            <div className={styles.body}>
+              <div className={styles.listOfGame}>
+                {data.results.map((game, index) => {
+                  return (
+                    <div key={game.id}>
+                      <Link href={`/game/${game.slug}/${game.id}`}>
+                        <div className={styles.gameCard}>
+                          <p className={styles.gameLine}>{game.name}</p>
+
+                          <img
+                            className={styles.gameCardPicture}
+                            src={game.background_image}
+                            alt={game.id}
+                          />
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className={styles.pagination}>
+                <button
+                  className={styles.paginationButton}
+                  onClick={() => {
+                    if (page > 1) {
+                      setPage(page - 1);
+                    }
+                  }}
+                >
+                  ◀︎
+                </button>
+                <span className={styles.paginationButton}>{page}</span>
+                <button
+                  className={styles.paginationButton}
+                  onClick={() => {
+                    if (data.next !== null) {
+                      setPage(page + 1);
+                    } else {
+                      alert("no more");
+                    }
+                  }}
+                >
+                  ▶︎
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <div>
+          <WidthAlert></WidthAlert>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/*________________
+
+ <main className={styles.mainGeneral}>
       <div className={styles.main}>
         <Header></Header>
         <header className={styles.header}>
@@ -122,5 +220,5 @@ export default function Home() {
         </div>
       </div>
     </main>
-  );
-}
+
+    */

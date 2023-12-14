@@ -1,0 +1,9 @@
+.width {
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1f2122;
+  color: white;
+}

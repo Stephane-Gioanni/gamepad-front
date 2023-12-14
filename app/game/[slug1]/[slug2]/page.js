@@ -9,17 +9,19 @@ import Cookies from "js-cookie";
 import { FcPlus } from "react-icons/fc";
 import Loader from "@/app/Components/Loader";
 import { FaWindowClose } from "react-icons/fa";
+import WidthAlert from "@/app/Components/WidthAlert";
 
 export default function GamePage(params) {
   let id = params.params.slug2;
 
+  const [windowWidth, setWindowWidth] = useState(1200);
   const [logged, setLogged] = useState(Cookies.get("userToken") || null);
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [needLog, setNeedLog] = useState(false);
   const [collectionCookie, setCollectionCookie] = useState(
     Cookies.get("userCollection") || null
   );
-  const [needLog, setNeedLog] = useState(false);
 
   const [collection, setCollection] = useState(
     JSON.parse(collectionCookie) || []
@@ -29,7 +31,7 @@ export default function GamePage(params) {
   const saveBDD = async (value) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/user-collection",
+        "https://gamepad-api-09c0a7cf5370.herokuapp.com/user-collection",
         {
           favorites: value,
           token: logged,
@@ -62,32 +64,222 @@ export default function GamePage(params) {
             },
           }
         );
-        console.log(response.data);
-        setData(response.data);
-        setIsLoading(false);
+        console.log("response.data", response.data);
+        console.log("collection", collection);
 
-        let newCollection = [...collection];
-        for (let i = 0; i < newCollection.length; i++) {
-          if (newCollection[i].id === response.data.id) {
-            setInCollection(true);
-          } else {
-            setInCollection(false);
+        for (let i = 0; i < collection.length; i++) {
+          if (response.data.id === collection[i].id) {
+            if (collection[i].inCollection === true) {
+              setInCollection(true);
+            } else {
+              setInCollection(false);
+            }
           }
         }
+
+        setData(response.data);
+        setIsLoading(false);
       } catch (error) {
         alert(error.message);
       }
     };
     fetchData();
-  }, [id, collection]);
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
-  console.log(collection);
-  console.log(inCollection);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [id, collection]);
 
   return isLoading ? (
     <Loader></Loader>
   ) : (
-    <div className={styles.gamePage}>
+    <div>
+      {windowWidth > 902 ? (
+        <div className={styles.gamePage}>
+          <Header></Header>
+          <div className={styles.body}>
+            <p className={styles.gameName}>{data.name}</p>
+            <div className={styles.main}>
+              <div className={styles.mainLeftSide}>
+                <div className={styles.gamepicture}>
+                  <img
+                    src={data.background_image}
+                    alt=""
+                    className={styles.gameImage}
+                  />
+                </div>
+              </div>
+              <div className={styles.mainRightSide}>
+                <div className={styles.topButtonsRightSideSection}>
+                  {inCollection === true ? (
+                    <div
+                      className={styles.topButtonsRightSideIfTrue}
+                      onClick={() => {
+                        let newCollection = [...collection];
+                        for (let i = 0; i < newCollection.length; i++) {
+                          if (newCollection[i].id === data.id) {
+                            newCollection.splice(i, 1);
+                            setCollection(newCollection);
+                            saveCollection(newCollection);
+                            setInCollection(false);
+                          }
+                        }
+                      }}
+                    >
+                      <div className={styles.savedInYourCollection}>
+                        <p> Saved in your collection</p>
+                        <span className={styles.inCollection}>✓</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={styles.topButtonsRightSide}
+                      onClick={() => {
+                        if (logged) {
+                          let isFound = false;
+                          let newCollection = [...collection];
+
+                          for (let i = 0; i < newCollection.length; i++) {
+                            if (newCollection[i].id === data.id) {
+                              isFound = true;
+                              break;
+                            }
+                          }
+                          if (isFound === false) {
+                            newCollection.push({
+                              name: data.name,
+                              id: data.id,
+                              image: data.background_image,
+                              inCollection: true,
+                            });
+                            setCollection(newCollection);
+
+                            saveCollection(newCollection);
+                          }
+                        } else {
+                          if (needLog === false) {
+                            setNeedLog(true);
+                          }
+                        }
+                      }}
+                    >
+                      <div>
+                        {needLog === true ? (
+                          <div className={styles.alert}>
+                            <p>
+                              Your must be logged to add this game to a
+                              collection{" "}
+                            </p>
+                            <span
+                              className={styles.closeAlert}
+                              onClick={() => setNeedLog(false)}
+                            >
+                              <FaWindowClose />
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+
+                      <div>
+                        {" "}
+                        <p> Save to</p>{" "}
+                      </div>
+                      <div className={styles.logoAdd}>
+                        <FcPlus />
+                      </div>
+                      <p className={styles.biggerWord}>collection</p>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.mainRightSideInfos}>
+                  <div className={styles.mainRightSideInfosColumn}>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Platforms</p>
+                      <div className={styles.infosContent}>
+                        {data.platforms.map((platform, index) => {
+                          return (
+                            <div key={index}>
+                              <p>{platform.platform.name},</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Release date</p>
+                      <p>{data.released}</p>
+                    </div>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Publisher</p>
+                      <div>
+                        {data.publishers.map((publisher, index) => {
+                          return (
+                            <div key={index}>
+                              <p>{publisher.name}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.mainRightSideInfosColumn}>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Genre</p>
+                      <div className={styles.infosContent}>
+                        {data.genres.map((genre, index) => {
+                          return (
+                            <div key={index}>
+                              <p>{genre.name}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Developper</p>
+                      <div>
+                        {data.developers.map((developer, index) => {
+                          return (
+                            <div key={index}>
+                              <p>{developer.name}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className={styles.infosBox}>
+                      <p className={styles.infosTitle}>Age rating</p>
+                      {data.esrb_rating ? <p>{data.esrb_rating.name}</p> : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.infosBoxLast}>
+                  <p className={styles.infosTitle}>About</p>
+                  <div className={styles.infosBoxLastDescription}>
+                    {data.description_raw}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <WidthAlert></WidthAlert>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/*
+ 
+ <div className={styles.gamePage}>
       <Header></Header>
       <div className={styles.body}>
         <p className={styles.gameName}>{data.name}</p>
@@ -142,10 +334,11 @@ export default function GamePage(params) {
                           name: data.name,
                           id: data.id,
                           image: data.background_image,
+                          inCollection: true,
                         });
                         setCollection(newCollection);
+
                         saveCollection(newCollection);
-                        setInCollection(true);
                       }
                     } else {
                       if (needLog === false) {
@@ -239,7 +432,7 @@ export default function GamePage(params) {
                 </div>
                 <div className={styles.infosBox}>
                   <p className={styles.infosTitle}>Age rating</p>
-                  <p>{data.esrb_rating.name}</p>
+                  {data.esrb_rating ? <p>{data.esrb_rating.name}</p> : null}
                 </div>
               </div>
             </div>
@@ -254,5 +447,4 @@ export default function GamePage(params) {
         </div>
       </div>
     </div>
-  );
-}
+ */
