@@ -5,12 +5,14 @@
   flex-direction: column;
   align-items: center;
   background-color: #1f2122;
+  font-family: "Anta", sans-serif;
 }
 
 .body {
   display: flex;
   flex-direction: column;
   width: 1200px;
+  font-family: "Anta", sans-serif;
 }
 
 .gameName {
@@ -18,6 +20,7 @@
   margin-top: 100px;
   margin-bottom: 20px;
   color: white;
+  font-family: "Anta", sans-serif;
 }
 
 .main {
@@ -26,7 +29,7 @@
   width: 100%;
   color: white;
   background-color: #1f2122;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: "Anta", sans-serif;
   height: 500px;
 }
 
@@ -89,7 +92,7 @@
   width: 150px;
   background-color: #1f2122;
   border-radius: 5px;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: "Anta", sans-serif;
   position: relative;
 }
 
@@ -98,6 +101,7 @@
   right: 9px;
   top: 12px;
   font-size: 18px;
+  font-family: "Anta", sans-serif;
 }
 
 .topButtonsRightSide:hover {
@@ -114,6 +118,7 @@
 
 .savedInYourCollection {
   position: relative;
+  font-family: "Anta", sans-serif;
 }
 
 .inCollection {
@@ -180,6 +185,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-family: "Anta", sans-serif;
 }
 
 .closeAlert {

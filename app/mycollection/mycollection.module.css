@@ -1,6 +1,7 @@
 .myCollection {
   display: flex;
   flex-direction: column;
+  font-family: "Anta", sans-serif;
 }
 
 .body {

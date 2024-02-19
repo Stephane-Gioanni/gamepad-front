@@ -6,6 +6,7 @@
   justify-content: center;
   flex-direction: column;
   background-color: #1f2122;
+  font-family: "Anta", sans-serif;
 }
 
 .main {
@@ -85,6 +86,7 @@
   border-radius: 10px;
   padding-left: 10px;
   font-size: 18px;
+  font-family: "Anta", sans-serif;
 }
 
 .signupButton {
@@ -94,6 +96,7 @@
   color: white;
   font-size: 18px;
   border: none;
+  font-family: "Anta", sans-serif;
 }
 
 .signupButton:hover {

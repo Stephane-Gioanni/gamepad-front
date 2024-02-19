@@ -2,14 +2,14 @@
 "use client";
 
 import { useEffect } from "react";
-import Header from "../Components/Header";
-import styles from "./mycollection.module.css";
 import { useState } from "react";
+import styles from "./mycollection.module.css";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Link from "next/link";
-import { SlGhost } from "react-icons/sl";
+import Header from "../Components/Header";
 import WidthAlert from "../Components/WidthAlert";
+import { SlGhost } from "react-icons/sl";
 
 export default function MyCollection() {
   const [windowWidth, setWindowWidth] = useState(1200);
@@ -21,9 +21,6 @@ export default function MyCollection() {
     JSON.parse(collectionCookie) || []
   );
   const [logged, setLogged] = useState(Cookies.get("userToken") || null);
-
-  console.log("collectionPage Cookie", collectionCookie);
-  console.log("collectionPage Collecton", collection);
 
   useEffect(() => {
     const handleResize = () => {
@@ -62,8 +59,6 @@ export default function MyCollection() {
     }
   };
 
-  console.log(collection.length);
-
   return logged ? (
     <div>
       {windowWidth > 992 ? (
@@ -75,7 +70,6 @@ export default function MyCollection() {
               {collection.length > 0 ? (
                 <div className={styles.listOfGame}>
                   {collection.map((game, index) => {
-                    console.log(game);
                     return (
                       <div className={styles.gameCard} key={index}>
                         <img
@@ -155,32 +149,3 @@ export default function MyCollection() {
     </div>
   );
 }
-
-/* 
-
-<div className={styles.myCollection}>
-      <Header></Header>
-      <div className={styles.needToLogPageBody}>
-        <div className={styles.needToLogPageBox}>
-          <SlGhost />
-
-          <p>You must have an account to get a collection</p>
-
-          <p>
-            Already have an account?{" "}
-            <Link href="/login">
-              <span className={styles.link}>Get logged now</span>{" "}
-            </Link>
-          </p>
-          <p>
-            If not, create one
-            <Link href="/signup">
-              <span className={styles.link}> here</span>
-            </Link>{" "}
-            !
-          </p>
-        </div>
-      </div>
-    </div>
-
-  */
