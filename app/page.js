@@ -10,10 +10,9 @@ import WidthAlert from "./Components/WidthAlert";
 
 import Link from "next/link";
 import Image from "next/image";
+
 import Logo from "./Images/gamepad.png";
 import Loader from "./Components/Loader";
-
-// const KEY = process.env.KEY;
 
 export default function Home() {
   const [data, setData] = useState();
@@ -28,14 +27,13 @@ export default function Home() {
     const fetchData = async () => {
       const response = await axios.get("https://api.rawg.io/api/games", {
         params: {
-          key: process.env.KEY,
+          key: "1682ef652d8e436f87287c77bc2c7abe", // supposed to be as env variable but, will do it ASAP
           search: searchInput,
           ordering: orderingField,
           ordering: selectedOption,
           page: page,
         },
       });
-      console.log(response.data);
       setData(response.data);
       setIsLoading(false);
     };
